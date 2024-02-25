@@ -31,11 +31,13 @@ class AuthController extends StateNotifier<bool> {
     required BuildContext context,
   }) async {
     state = true; // ローディング開始。状態をtrueに設定してUIにローディングを表示させることができます。
+
     // AuthAPIを通じてサインアップのAPI呼び出しを非同期で行います。
     final res = await _authAPI.signUp(
       email: email,
       password: password,
     );
+
     // API呼び出しの結果を処理します。成功時はユーザー名をコンソールに表示、失敗時はエラーメッセージをSnackBarで表示します。
     res.fold(
       (l) => showSnackBar(context, l.message), // エラー時の処理
