@@ -40,13 +40,13 @@ class AuthAPI implements IAuthAPI {
       {required String email, required String password}) async {
     try {
       // AppwriteのAccountサービスを使用して新しいユーザーを作成します。
-      final account = _account.create(
+      final account = await _account.create(
         userId: ID.unique(), // ユニークなユーザーIDを生成します。
         email: email,
         password: password,
       );
       // 処理が成功した場合、作成されたユーザーオブジェクトを返します。
-      return right(account as model.User);
+      return right(account);
     } on AppwriteException catch (e, stackTrace) {
       // Appwriteで定義されたエラーをキャッチし、エラー情報を含むオブジェクトを返します。
       return left(Failure(
