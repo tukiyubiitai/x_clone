@@ -1,13 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:x_clone/constants/ui_constants.dart';
+import 'package:x_clone/features/auth/controller/auth_controller.dart';
 import 'package:x_clone/features/auth/view/login_view.dart';
 import 'package:x_clone/features/auth/widgets/auth_field.dart';
 
 import '../../../common/common.dart';
 import '../../../theme/theme.dart';
 
-class SignUpView extends StatefulWidget {
+class SignUpView extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(
         builder: (context) => SignUpView(),
       );
@@ -15,10 +17,10 @@ class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
 
   @override
-  State<SignUpView> createState() => _SignUpViewState();
+  ConsumerState<SignUpView> createState() => _SignUpViewState();
 }
 
-class _SignUpViewState extends State<SignUpView> {
+class _SignUpViewState extends ConsumerState<SignUpView> {
   final appbar = UIConstants.appBar(); // 変数にすることで、何度も呼ばれない
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -28,6 +30,14 @@ class _SignUpViewState extends State<SignUpView> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
+  }
+
+  void onSignUp() {
+    ref.read(authControllerProvider.notifier).signUp(
+          email: emailController.text,
+          password: passwordController.text,
+          context: context,
+        );
   }
 
   @override
@@ -56,7 +66,7 @@ class _SignUpViewState extends State<SignUpView> {
                 Align(
                   alignment: Alignment.topRight,
                   child: RoundedSmallButton(
-                    onTap: () {},
+                    onTap: onSignUp, // sign up 処理
                     label: "Done",
                   ),
                 ),

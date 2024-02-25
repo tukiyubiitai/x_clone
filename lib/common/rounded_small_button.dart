@@ -17,22 +17,25 @@ class RoundedSmallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      label: Text(
-        label,
-        style: TextStyle(
-          color: textColor,
+    return InkWell(
+      onTap: onTap,
+      child: Chip(
+        label: Text(
+          label,
+          style: TextStyle(
+            color: textColor,
+          ),
         ),
-      ),
-      backgroundColor: backgroundColor,
-      labelPadding: EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 1,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(50),
-        ), // ここで角の丸みを調整
+        backgroundColor: backgroundColor,
+        labelPadding: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 1,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(50),
+          ), // ここで角の丸みを調整
+        ),
       ),
     );
   }

@@ -9,3 +9,8 @@ final appwriteClientProvider = Provider((ref) {
       .setProject(AppwriteConstants.projectId)
       .setSelfSigned(status: true);
 });
+
+final appwriteAccountProvider = Provider((ref) {
+  final client = ref.watch(appwriteClientProvider);
+  return Account(client);
+});
