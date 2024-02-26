@@ -12,7 +12,7 @@ class UserModel with _$UserModel {
     required List<String> following,
     required String profilePic,
     required String bannerPic,
-    required String uid,
+    @JsonKey(includeToJson: false) required String uid, // この行を変更
     required String bio,
     required bool isTwitterBlue,
   }) = _UserModel;

@@ -41,39 +41,39 @@ class AuthController extends StateNotifier<bool> {
 
   // ユーザー登録（サインアップ）の処理を行うメソッド。
   // メールアドレスとパスワードを引数に取り、BuildContextも受け取ってUI操作（SnackBarの表示）を可能にします。
-  Future<void> signUp({
+  void signUp({
     required String email,
     required String password,
     required BuildContext context,
   }) async {
-    state = true; // ローディング開始。状態をtrueに設定してUIにローディングを表示させることができます。
-
-    // AuthAPIを通じてサインアップのAPI呼び出しを非同期で行います。
+    state = true;
     final res = await _authAPI.signUp(
       email: email,
       password: password,
     );
-
-    // API呼び出しの結果を処理します。成功時はユーザー名をコンソールに表示、失敗時はエラーメッセージをSnackBarで表示します。
-    res.fold((l) => showSnackBar(context, l.message), // エラー時の処理
-        (r) async {
-      UserModel userModel = UserModel(
+    state = false;
+    res.fold(
+      (l) => showSnackBar(context, l.message),
+      (r) async {
+        print(r.$id);
+        UserModel userModel = UserModel(
           email: email,
           name: getNameFromEmail(email),
-          followers: [],
-          following: [],
-          profilePic: "",
-          bannerPic: "",
-          uid: "",
-          bio: "",
-          isTwitterBlue: false);
-      final res2 = await _userAPI.saveUserData(userModel);
-      res2.fold((l) => showSnackBar(context, l.message), (_) {
-        showSnackBar(context, "アカウントが作成されました！　ログインして下さい");
-        Navigator.push(context, LoginView.route());
-      });
-    });
-    state = false; // ローディング終了。状態をfalseに設定してUIのローディング表示を解除します。
+          followers: const [],
+          following: const [],
+          profilePic: '',
+          bannerPic: '',
+          uid: r.$id,
+          bio: '',
+          isTwitterBlue: false,
+        );
+        final res2 = await _userAPI.saveUserData(userModel);
+        res2.fold((l) => showSnackBar(context, l.message), (r) {
+          showSnackBar(context, 'Accounted created! Please login.');
+          Navigator.push(context, LoginView.route());
+        });
+      },
+    );
   }
 
   void login({

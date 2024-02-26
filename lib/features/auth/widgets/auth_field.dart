@@ -12,6 +12,9 @@ class AuthField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+      ),
       controller: controller,
       decoration: InputDecoration(
           focusedBorder: OutlineInputBorder(
