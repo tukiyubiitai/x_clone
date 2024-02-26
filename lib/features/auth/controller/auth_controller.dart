@@ -1,6 +1,9 @@
+import 'package:appwrite/models.dart' as model;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:x_clone/core/utils.dart';
+import 'package:x_clone/features/auth/view/login_view.dart';
+import 'package:x_clone/features/home/view/home_view.dart';
 
 import '../../../apis/auth_api.dart';
 
@@ -13,6 +16,11 @@ final authControllerProvider =
   );
 });
 
+final currentUserAccountProvider = FutureProvider((ref) {
+  final authController = ref.watch(authControllerProvider.notifier);
+  return authController.currentUser();
+});
+
 // AuthControllerは、認証関連の状態（この場合はローディング状態）とロジックを管理するクラスです。
 class AuthController extends StateNotifier<bool> {
   // AuthAPIのインスタンスを保持します。これを通じて認証関連のAPI呼び出しを行います。
@@ -22,6 +30,9 @@ class AuthController extends StateNotifier<bool> {
   AuthController({required AuthAPI authAPI})
       : _authAPI = authAPI,
         super(false);
+
+  //　ユーザーが存在するかどうか確認
+  Future<model.User?> currentUser() => _authAPI.currentUserAccount();
 
   // ユーザー登録（サインアップ）の処理を行うメソッド。
   // メールアドレスとパスワードを引数に取り、BuildContextも受け取ってUI操作（SnackBarの表示）を可能にします。
@@ -39,10 +50,32 @@ class AuthController extends StateNotifier<bool> {
     );
 
     // API呼び出しの結果を処理します。成功時はユーザー名をコンソールに表示、失敗時はエラーメッセージをSnackBarで表示します。
-    res.fold(
-      (l) => showSnackBar(context, l.message), // エラー時の処理
-      (r) => print(r.email), // 成功時の処理
+    res.fold((l) => showSnackBar(context, l.message), // エラー時の処理
+        (r) {
+      showSnackBar(context, "アカウントが作成されました！　ログインして下さい");
+      Navigator.push(context, LoginView.route());
+    });
+    state = false; // ローディング終了。状態をfalseに設定してUIのローディング表示を解除します。
+  }
+
+  void login({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
+    state = true; // ローディング開始。状態をtrueに設定してUIにローディングを表示させることができます。
+
+    // AuthAPIを通じてサインアップのAPI呼び出しを非同期で行います。
+    final res = await _authAPI.login(
+      email: email,
+      password: password,
     );
+
+    // API呼び出しの結果を処理します。成功時はユーザー名をコンソールに表示、失敗時はエラーメッセージをSnackBarで表示します。
+    res.fold((l) => showSnackBar(context, l.message), // エラー時の処理
+        (r) {
+      Navigator.push(context, HomeView.route());
+    });
     state = false; // ローディング終了。状態をfalseに設定してUIのローディング表示を解除します。
   }
 }

@@ -23,6 +23,13 @@ abstract class IAuthAPI {
     required String email,
     required String password,
   });
+
+  FutureEither<model.Session> login({
+    required String email,
+    required String password,
+  });
+
+  Future<model.User?> currentUserAccount();
 }
 
 // IAuthAPIインターフェースを実装するクラスです。
@@ -55,6 +62,40 @@ class AuthAPI implements IAuthAPI {
     } catch (e, stackTrace) {
       // その他のエラーをキャッチし、エラー情報を含むオブジェクトを返します。
       return left(Failure(message: e.toString(), stackTrace: stackTrace));
+    }
+  }
+
+  @override
+  FutureEither<model.Session> login(
+      {required String email, required String password}) async {
+    try {
+      // AppwriteのAccountサービスを使用して新しいユーザーを作成します。
+      final session = await _account.createEmailSession(
+        email: email,
+        password: password,
+      );
+      // 処理が成功した場合、作成されたユーザーオブジェクトを返します。
+      return right(session);
+    } on AppwriteException catch (e, stackTrace) {
+      // Appwriteで定義されたエラーをキャッチし、エラー情報を含むオブジェクトを返します。
+      return left(Failure(
+          message: e.message ?? "Some unexpected error occurred",
+          stackTrace: stackTrace));
+    } catch (e, stackTrace) {
+      // その他のエラーをキャッチし、エラー情報を含むオブジェクトを返します。
+      return left(Failure(message: e.toString(), stackTrace: stackTrace));
+    }
+  }
+
+  // 登録されているユーザー情報を取得する
+  @override
+  Future<model.User?> currentUserAccount() async {
+    try {
+      return _account.get();
+    } on AppwriteException catch (e) {
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 }
