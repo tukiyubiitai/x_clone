@@ -22,11 +22,10 @@ class UserAPI implements IUserAPI {
   @override
   FutureEitherVoid saveUserData(UserModel userModel) async {
     try {
-      print(userModel.toJson);
       await _db.createDocument(
         databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.usersCollection,
-        documentId: userModel.uid,
+        documentId: ID.unique(),
         data: userModel.toJson(),
       );
       return right(null);
