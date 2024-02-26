@@ -5,6 +5,8 @@ import 'package:x_clone/features/auth/controller/auth_controller.dart';
 import 'package:x_clone/features/auth/view/signup_view.dart';
 import 'package:x_clone/theme/theme.dart';
 
+import 'features/home/view/home_view.dart';
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -20,9 +22,9 @@ class MyApp extends ConsumerWidget {
         home: ref.watch(currentUserAccountProvider).when(
               data: (user) {
                 print(user);
-                // if (user != null) {
-                //   return const HomeView();
-                // }
+                if (user != null) {
+                  return const HomeView();
+                }
                 return const SignUpView();
               },
               error: (e, st) => ErrorPage(
