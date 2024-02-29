@@ -116,8 +116,6 @@ class AuthController extends StateNotifier<bool> {
   // appwriteから取得したuserDataをUserModelに変換する
   Future<UserModel> getUserData(String uid) async {
     final document = await _userAPI.getUserData(uid); // appwriteから取得
-    print(document.data);
-    print("呼ばれてない");
     final updateUser = UserModel.fromJson(document.data); // UserModelに変換
     return updateUser;
   }
