@@ -19,6 +19,22 @@ final authControllerProvider =
   );
 });
 
+// 現在ログインしているユーザーの詳細データを取得
+final currentUserDetailsProvider = FutureProvider((ref) async {
+  final currentUserId =
+      ref.watch(currentUserAccountProvider).value!.$id; //　uidを取得する
+  final userDetails =
+      ref.watch(userDetailsProvider(currentUserId)); // uidから情報を取得し、userModelに変換
+  return userDetails.value;
+});
+
+// appwriteのuidに基づくuserdataからuserModelに変換
+final userDetailsProvider = FutureProvider.family((ref, String uid) {
+  final authController = ref.watch(authControllerProvider.notifier);
+  return authController.getUserData(uid);
+});
+
+// ユーザーが存在するかどうか
 final currentUserAccountProvider = FutureProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
   return authController.currentUser();
@@ -63,8 +79,7 @@ class AuthController extends StateNotifier<bool> {
           following: const [],
           profilePic: '',
           bannerPic: '',
-          // uid: r.$id,
-          uid: '',
+          uid: r.$id,
           bio: '',
           isTwitterBlue: false,
         );
@@ -96,5 +111,14 @@ class AuthController extends StateNotifier<bool> {
       Navigator.push(context, HomeView.route());
     });
     state = false; // ローディング終了。状態をfalseに設定してUIのローディング表示を解除します。
+  }
+
+  // appwriteから取得したuserDataをUserModelに変換する
+  Future<UserModel> getUserData(String uid) async {
+    final document = await _userAPI.getUserData(uid); // appwriteから取得
+    print(document.data);
+    print("呼ばれてない");
+    final updateUser = UserModel.fromJson(document.data); // UserModelに変換
+    return updateUser;
   }
 }

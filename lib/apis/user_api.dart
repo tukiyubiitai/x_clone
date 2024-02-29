@@ -1,4 +1,6 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart' as model;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:x_clone/constants/appwrite_constants.dart';
@@ -12,6 +14,8 @@ final userAPIProvider = Provider((ref) {
 
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
+
+  Future<model.Document> getUserData(String uid);
 }
 
 class UserAPI implements IUserAPI {
@@ -25,7 +29,7 @@ class UserAPI implements IUserAPI {
       await _db.createDocument(
         databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.usersCollection,
-        documentId: ID.unique(),
+        documentId: userModel.uid,
         data: userModel.toJson(),
       );
       return right(null);
@@ -35,6 +39,25 @@ class UserAPI implements IUserAPI {
           stackTrace: st));
     } catch (e, st) {
       return left(Failure(message: e.toString(), stackTrace: st));
+    }
+  }
+
+  // appwriteからデータを取得
+  @override
+  Future<model.Document> getUserData(String uid) async {
+    try {
+      print("呼ばれた");
+      return await _db.getDocument(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.usersCollection,
+        documentId: uid,
+      );
+
+    } catch (e, st) {
+      print("呼ばれた2");
+      debugPrint(e.toString());
+      debugPrint(st.toString());
+      throw e;
     }
   }
 }

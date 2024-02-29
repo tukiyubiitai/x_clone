@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:x_clone/constants/constants.dart';
+import 'package:x_clone/features/tweet/view/create_tweet_view.dart';
 import 'package:x_clone/theme/pallete.dart';
 
 class HomeView extends StatefulWidget {
@@ -23,11 +24,27 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
+  onCreateTweet() {
+    Navigator.push(context, CreateTweetScreen.route());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar,
-      body: IndexedStack(),
+      body: IndexedStack(
+        index: _page,
+        children: UIConstants.bottomTabBarPages,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: onCreateTweet,
+        shape: CircleBorder(),
+        child: Icon(
+          Icons.add,
+          color: Pallete.whiteColor,
+          size: 28,
+        ),
+      ),
       bottomNavigationBar: CupertinoTabBar(
         currentIndex: _page,
         onTap: onPageChange,
@@ -47,14 +64,20 @@ class _HomeViewState extends State<HomeView> {
                       Icons.search,
                       color: Pallete.whiteColor,
                     )
-                  : Icon(Icons.search_outlined)),
+                  : Icon(
+                      Icons.search_outlined,
+                      color: Pallete.whiteColor,
+                    )),
           BottomNavigationBarItem(
             icon: _page == 2
                 ? Icon(
                     Icons.group,
                     color: Pallete.whiteColor,
                   )
-                : Icon(Icons.group_outlined),
+                : Icon(
+                    Icons.group_outlined,
+                    color: Pallete.whiteColor,
+                  ),
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
@@ -72,6 +95,7 @@ class _HomeViewState extends State<HomeView> {
                     )
                   : Icon(
                       Icons.mail_outline,
+                      color: Pallete.whiteColor,
                     )),
         ],
       ),
