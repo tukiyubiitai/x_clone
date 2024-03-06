@@ -8,6 +8,7 @@ import 'package:x_clone/common/common.dart';
 import 'package:x_clone/constants/assets_constants.dart';
 import 'package:x_clone/core/utils.dart';
 import 'package:x_clone/features/auth/controller/auth_controller.dart';
+import 'package:x_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:x_clone/theme/pallete.dart';
 
 class CreateTweetScreen extends ConsumerStatefulWidget {
@@ -36,9 +37,15 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
     setState(() {});
   }
 
+  void shareTweet() {
+    ref.read(tweetControllerProvider.notifier).shareTweet(
+        images: images, text: tweetTextController.text, context: context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserDetailsProvider).value;
+    final isLoading = ref.watch(tweetControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -56,7 +63,7 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
             width: 100,
             height: 40,
             child: RoundedSmallButton(
-              onTap: () {},
+              onTap: shareTweet,
               label: "ポストする",
               backgroundColor: Pallete.blueColor,
               textColor: Pallete.backgroundColor,
@@ -64,17 +71,17 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
           ),
         ],
       ),
-      body: currentUser == null
+      body: isLoading || currentUser == null
           ? const Loader()
           : SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 28, // アバターのサイズを指定
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 28, // アバターのサイズを指定
                           backgroundColor: Colors.grey[200], // アイコンの背景色を設定
                           backgroundImage: currentUser.profilePic.isNotEmpty
                               ? NetworkImage(currentUser.profilePic)
@@ -83,9 +90,9 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
                               ? Icon(Icons.person,
                                   color: Colors.grey) // 画像がない場合はアイコンを表示
                               : null, // 画像データがある場合は何も表示しない
-                  ),
-                  SizedBox(
-                    width: 15,
+                        ),
+                        SizedBox(
+                          width: 15,
                   ),
                   Expanded(
                     child: TextField(
